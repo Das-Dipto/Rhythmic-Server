@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -28,6 +28,11 @@ async function run() {
 
     const userCollection = client.db('rhythm').collection('userInfo');
 
+    //Get Operation for getting all regisdterd users
+    app.get('/getAllUsers', async(req, res)=>{
+        const result = await userCollection.find().toArray();
+        res.send(result);
+    })
 
     //Create Operation for Adding User
       app.post('/allUsers', async(req, res)=>{
@@ -35,6 +40,23 @@ async function run() {
         console.log(newUser);
         const result = await userCollection.insertOne(newUser);
         res.send(result);
+    })
+
+
+     //Update Operation for updating user-role
+     app.put('/updateUserRole/:id', async(req, res)=>{
+      const id = req.params.id;
+      const info = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true};
+      const updatedData = {
+        $set:{
+          role: info.role,
+        }
+      }
+
+      const result = await userCollection.updateOne(filter, updatedData, options);  
+      res.send(result);
     })
 
 
