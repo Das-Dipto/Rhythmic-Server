@@ -27,6 +27,7 @@ async function run() {
     await client.connect();
 
     const userCollection = client.db('rhythm').collection('userInfo');
+    const classCollection = client.db('rhythm').collection('classInfo');
 
     //Get Operation for getting all regisdterd users
     app.get('/getAllUsers', async(req, res)=>{
@@ -34,12 +35,21 @@ async function run() {
         res.send(result);
     })
 
+
     //Create Operation for Adding User
       app.post('/allUsers', async(req, res)=>{
         const newUser = req.body;
         console.log(newUser);
         const result = await userCollection.insertOne(newUser);
         res.send(result);
+    })
+
+    //Create Operation for adding class by Instructors
+    app.post('/addClasses', async(req, res)=>{
+       const newClass = req.body;
+       console.log(newClass);
+       const result = await classCollection.insertOne(newClass);
+       res.send(result);
     })
 
 
