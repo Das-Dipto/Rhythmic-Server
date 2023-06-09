@@ -38,19 +38,24 @@ async function run() {
 
     //Read operation for sorting data according to price
     app.get('/getAllClasses', async(req, res)=>{
-
-       let query = {};
-       if(req.query?.instructorEmail){
-         query = {instructorEmail: req.query.instructorEmail}
-       }
-
-       let sortQuery = {};
-        sortQuery = {price: -1}
-       
-
-       const result = await classCollection.find(query).sort(sortQuery).toArray();
-       res.send(result);
+          let query = {};
+          if(req.query?.instructorEmail){
+            query = {instructorEmail: req.query.instructorEmail}
+          }
+          let sortQuery = {};
+          sortQuery = {price: -1}
+          
+          const result = await classCollection.find(query).sort(sortQuery).toArray();
+          res.send(result);
     })
+
+    //Read operation for finding single toy data
+    app.get('/updateClassInfo/:id', async(req, res)=>{
+          const id = req.params.id;
+          const query = {_id: new ObjectId(id)}
+          const result = await classCollection.findOne(query);
+          res.send(result)
+      })
 
 
     //Create Operation for Adding User
@@ -83,6 +88,27 @@ async function run() {
       }
 
       const result = await userCollection.updateOne(filter, updatedData, options);  
+      res.send(result);
+    })
+
+
+     //Update Operation for updating class-info
+     app.put('/updateClass/:id', async(req, res)=>{
+      const id = req.params.id;
+      const info = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true};
+      const updatedData = {
+        $set:{
+          instructorName: info.instructorName,
+          className: info.className,
+          instructorEmail: info.instructorEmail,
+          price: info.price,
+          seats: info.seats
+        }
+      }
+
+      const result = await classCollection.updateOne(filter, updatedData, options);  
       res.send(result);
     })
 
