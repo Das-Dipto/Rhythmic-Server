@@ -36,6 +36,23 @@ async function run() {
     })
 
 
+    //Read operation for sorting data according to price
+    app.get('/getAllClasses', async(req, res)=>{
+
+       let query = {};
+       if(req.query?.instructorEmail){
+         query = {instructorEmail: req.query.instructorEmail}
+       }
+
+       let sortQuery = {};
+        sortQuery = {price: -1}
+       
+
+       const result = await classCollection.find(query).sort(sortQuery).toArray();
+       res.send(result);
+    })
+
+
     //Create Operation for Adding User
       app.post('/allUsers', async(req, res)=>{
         const newUser = req.body;
