@@ -36,6 +36,13 @@ async function run() {
         res.send(result);
     })
 
+    //Get Operation for getting all regisdterd users who are instructors
+    app.get('/getInstructors', async(req, res)=>{
+        const query = {role:'instructor'}
+        const result = await userCollection.find(query).toArray();
+        res.send(result);
+    })
+
 
     //Read operation for getting specific user data through his/her email
     app.get('/getAllClasses', async(req, res)=>{
@@ -163,6 +170,16 @@ async function run() {
       const result = await classCollection.updateOne(filter, updatedData, options);  
       res.send(result);
     })
+
+
+    //Delete Operation for deleting class from student selected classlist
+    app.delete('/deleteClass/:id', async (req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await selectedClassCollection.deleteOne(query);
+      res.send(result);
+    })
+
 
 
 
