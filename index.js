@@ -36,7 +36,7 @@ async function run() {
     })
 
 
-    //Read operation for sorting data according to price
+    //Read operation for getting specific user data through his/her email
     app.get('/getAllClasses', async(req, res)=>{
           let query = {};
           if(req.query?.instructorEmail){
@@ -48,6 +48,13 @@ async function run() {
           const result = await classCollection.find(query).sort(sortQuery).toArray();
           res.send(result);
     })
+
+
+      //Read operation for getting all class data
+      app.get('/allClasses', async(req, res)=>{
+         const result = await classCollection.find().toArray();
+         res.send(result);
+      })
 
     //Read operation for finding single toy data
     app.get('/updateClassInfo/:id', async(req, res)=>{
@@ -105,6 +112,23 @@ async function run() {
           instructorEmail: info.instructorEmail,
           price: info.price,
           seats: info.seats
+        }
+      }
+
+      const result = await classCollection.updateOne(filter, updatedData, options);  
+      res.send(result);
+    })
+
+
+      //Update Operation for updating class-status
+     app.put('/updateUserStatus/:id', async(req, res)=>{
+      const id = req.params.id;
+      const info = req.body;
+      const filter = {_id: new ObjectId(id)}
+      const options = {upsert: true};
+      const updatedData = {
+        $set:{
+          status: info.status,
         }
       }
 
