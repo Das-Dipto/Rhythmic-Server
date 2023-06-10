@@ -28,6 +28,7 @@ async function run() {
 
     const userCollection = client.db('rhythm').collection('userInfo');
     const classCollection = client.db('rhythm').collection('classInfo');
+    const selectedClassCollection = client.db('rhythm').collection('selectedClassInfo')
 
     //Get Operation for getting all regisdterd users
     app.get('/getAllUsers', async(req, res)=>{
@@ -71,6 +72,16 @@ async function run() {
         res.send(result);
     })
 
+    //Read operation for getting specific user data through his/her email
+    app.get('/selectClasses', async(req, res)=>{
+          let query = {};
+          if(req.query?.studentEmail){
+            query = {addedBy: req.query.studentEmail}
+          }
+          const result = await selectedClassCollection.find(query).toArray();
+          res.send(result);
+    })
+
 
     //Create Operation for Adding User
       app.post('/allUsers', async(req, res)=>{
@@ -87,6 +98,15 @@ async function run() {
        const result = await classCollection.insertOne(newClass);
        res.send(result);
     })
+
+
+     //Create Operation for adding class into selectedClass
+     app.post('/selectedClasses', async(req, res)=>{
+       const selectedClass = req.body;
+       console.log(selectedClass);
+       const result = await selectedClassCollection.insertOne(selectedClass);
+       res.send(result);
+     })
 
 
      //Update Operation for updating user-role
