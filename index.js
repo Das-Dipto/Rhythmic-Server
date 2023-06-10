@@ -50,19 +50,26 @@ async function run() {
     })
 
 
-      //Read operation for getting all class data
-      app.get('/allClasses', async(req, res)=>{
+    //Read operation for getting all class data
+    app.get('/allClasses', async(req, res)=>{
          const result = await classCollection.find().toArray();
          res.send(result);
       })
 
-    //Read operation for finding single toy data
+    //Read operation for finding single class data
     app.get('/updateClassInfo/:id', async(req, res)=>{
           const id = req.params.id;
           const query = {_id: new ObjectId(id)}
           const result = await classCollection.findOne(query);
           res.send(result)
       })
+
+    //Read operation for finding approved class data
+    app.get(`/getApprovedClass`, async(req, res)=>{
+       const query = { status: 'Approved' };
+        const result = await classCollection.find(query).toArray();
+        res.send(result);
+    })
 
 
     //Create Operation for Adding User
