@@ -121,7 +121,7 @@ async function run() {
 
 
       //Update Operation for updating class-status
-     app.put('/updateUserStatus/:id', async(req, res)=>{
+     app.put('/updateClassStatus/:id', async(req, res)=>{
       const id = req.params.id;
       const info = req.body;
       const filter = {_id: new ObjectId(id)}
@@ -129,6 +129,7 @@ async function run() {
       const updatedData = {
         $set:{
           status: info.status,
+          feedback: info.feedback
         }
       }
 
