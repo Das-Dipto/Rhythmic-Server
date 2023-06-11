@@ -32,13 +32,24 @@ async function run() {
     const selectedClassCollection = client.db('rhythm').collection('selectedClassInfo');
     const paymentInfoCollection = client.db('rhythm').collection('paymentInfo');
 
-    //Get Operation for getting all regisdterd users
+    //Get Operation for getting all registered users
     app.get('/getAllUsers', async(req, res)=>{
         const result = await userCollection.find().toArray();
         res.send(result);
     })
 
-    //Get Operation for getting all regisdterd users who are instructors
+   //Get Operation for getting the role of  registered users
+   app.get('/getRole', async(req, res)=>{
+       let query = {};
+       if(req.query?.email){
+          query = {email: req.query.email}
+       }
+       const result = await userCollection.findOne(query);
+       res.send(result);
+   })
+
+
+   //Get Operation for getting all regisdterd users who are instructors
     app.get('/getInstructors', async(req, res)=>{
         const query = {role:'instructor'}
         const result = await userCollection.find(query).toArray();
@@ -101,11 +112,21 @@ async function run() {
       res.send(result)
     })
 
+    //Read operation for getting enrolled class data of specific student
+    app.get('/enrolledClasses', async(req, res)=>{
+          let query = {};
+          if(req.query?.studentEmail){
+            query = {email: req.query.studentEmail}
+          }
+          const result = await paymentInfoCollection.find(query).sort({ date: -1 }).toArray();
+          res.send(result);
+    })
+
 
     //Create Operation for Adding User
       app.post('/allUsers', async(req, res)=>{
         const newUser = req.body;
-        console.log(newUser);
+        // console.log(newUser);
         const result = await userCollection.insertOne(newUser);
         res.send(result);
     })
@@ -113,7 +134,7 @@ async function run() {
     //Create Operation for adding class by Instructors
     app.post('/addClasses', async(req, res)=>{
        const newClass = req.body;
-       console.log(newClass);
+      //  console.log(newClass);
        const result = await classCollection.insertOne(newClass);
        res.send(result);
     })
@@ -122,7 +143,7 @@ async function run() {
      //Create Operation for adding class into selectedClass
      app.post('/selectedClasses', async(req, res)=>{
        const selectedClass = req.body;
-       console.log(selectedClass);
+      //  console.log(selectedClass);
        const result = await selectedClassCollection.insertOne(selectedClass);
        res.send(result);
      })
@@ -184,16 +205,6 @@ async function run() {
     })
 
 
-    //Delete Operation for deleting class from student selected classlist
-    app.delete('/deleteClass/:id', async (req, res)=>{
-      const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
-      const result = await selectedClassCollection.deleteOne(query);
-      res.send(result);
-    })
-
-
-
     // create payment intent
     app.post('/create-payment-intent', async (req, res) => {
       const { price } = req.body;
@@ -214,12 +225,27 @@ async function run() {
       app.post('/payments',  async (req, res) => {
         const payment = req.body;
         const insertResult = await paymentInfoCollection.insertOne(payment);
-  
-        // const query = { _id: { $in: payment.cartItems.map(id => new ObjectId(id)) } }
-        // const deleteResult = await cartCollection.deleteMany(query)
-  
         res.send(insertResult);
       })
+
+
+
+    //Delete Operation for deleting class from student selected classlist
+    app.delete('/deleteClass/:id', async (req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await selectedClassCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
+    //Delete Operation for deleting class from student selected classlist after successful payment and enrollment
+    app.delete(`/deleteSelectClass/:id`, async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await selectedClassCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
