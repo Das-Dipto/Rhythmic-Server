@@ -122,6 +122,18 @@ async function run() {
           res.send(result);
     })
 
+    //Read operation for getting data with Instructor name and Class Name
+    app.get('/updateSeats', async(req, res) => {
+          let query = {};
+          if(req.query?.email && req.query?.className){
+            query = {instructorEmail: req.query.email, className:req.query?.className};
+          }
+      const result = await classCollection.findOne(query);
+      // console.log(result);
+      res.send(result);
+    })
+ 
+
 
     //Create Operation for Adding User
       app.post('/allUsers', async(req, res)=>{
@@ -186,8 +198,24 @@ async function run() {
       res.send(result);
     })
 
+      //Update Operation for updating seats and enrollment data
+      app.put('/updatedOnly/:id', async (req, res)=>{
+        const ID = req.params.id;
+        console.log(ID);
+        const info = req.body;
+        const filter = {_id: new ObjectId(ID)}
+        const options = {upsert: true};
+        const updatedData = {
+          $set:{
+            seats: info.updatedSeats,
+            enrollment: info.updatedEnrollment
+          }
+        }
+        const result = await classCollection.updateOne(filter, updatedData, options);  
+        res.send(result);
+      })
 
-      //Update Operation for updating class-status
+    //   //Update Operation for updating class-status
      app.put('/updateClassStatus/:id', async(req, res)=>{
       const id = req.params.id;
       const info = req.body;
@@ -203,6 +231,9 @@ async function run() {
       const result = await classCollection.updateOne(filter, updatedData, options);  
       res.send(result);
     })
+
+
+  
 
 
     // create payment intent
