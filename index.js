@@ -38,6 +38,15 @@ async function run() {
         res.send(result);
     })
 
+    //Read operation for getting popular classes
+    app.get('/getPopularClasses', async(req, res)=>{
+      let sortQuery = {};
+      sortQuery = {seats: 1}
+      const result = await classCollection.find().sort(sortQuery).limit(6).toArray();
+      res.send(result);
+   })
+
+
    //Get Operation for getting the role of  registered users
    app.get('/getRole', async(req, res)=>{
        let query = {};
@@ -48,8 +57,7 @@ async function run() {
        res.send(result);
    })
 
-
-   //Get Operation for getting all regisdterd users who are instructors
+   //Get Operation for getting all regisdterd users who are instructors and also six popular instructor
     app.get('/getInstructors', async(req, res)=>{
         const query = {role:'instructor'}
         const result = await userCollection.find(query).toArray();
